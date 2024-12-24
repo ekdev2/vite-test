@@ -1,12 +1,15 @@
 import { useState } from "react";
 import "./App.css";
 import reactLogo from "./assets/react.svg";
+import TodoItem from "./components/TodoItem";
 import viteLogo from "/vite.svg";
 
 function App() {
   const [count, setCount] = useState(0);
   const [todos, setTodos] = useState<string[]>([]);
   const [newTodo, setNewTodo] = useState("");
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editingText, setEditingText] = useState("");
 
   const addTodo = () => {
     if (newTodo.trim()) {
@@ -17,6 +20,19 @@ function App() {
 
   const removeTodo = (index: number) => {
     setTodos(todos.filter((_, i) => i !== index));
+  };
+
+  const startEditing = (index: number, currentText: string) => {
+    setEditingIndex(index);
+    setEditingText(currentText);
+  };
+
+  const saveEdit = (index: number) => {
+    const updatedTodos = [...todos];
+    updatedTodos[index] = editingText;
+    setTodos(updatedTodos);
+    setEditingIndex(null);
+    setEditingText("");
   };
 
   return (
@@ -49,9 +65,17 @@ function App() {
         <button onClick={addTodo}>Add</button>
         <ul>
           {todos.map((todo, index) => (
-            <li key={index}>
-              {todo} <button onClick={() => removeTodo(index)}>Remove</button>
-            </li>
+            <TodoItem
+              key={index}
+              todo={todo}
+              index={index}
+              editingIndex={editingIndex}
+              editingText={editingText}
+              startEditing={startEditing}
+              saveEdit={saveEdit}
+              removeTodo={removeTodo}
+              setEditingText={setEditingText}
+            />
           ))}
         </ul>
       </div>
